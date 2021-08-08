@@ -31,11 +31,21 @@ const App = () => {
 
   return (
     <div className="App">
-      <h1>My Hacker Stories</h1>
+      <Greeting name="Colin" age="28" occupation="Front-end developer" />
       <Search />
       <hr />
       <List list={stories} />
     </div>
+  );
+}
+
+// Greeting
+function Greeting(props) {
+  return (
+    <h1>
+      Hello I'm {props.name}<br></br>
+      a {props.age} year old {props.occupation}.
+    </h1>
   );
 }
 
