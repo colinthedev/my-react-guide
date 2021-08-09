@@ -61,6 +61,7 @@ const words = [
   'present'
 ];
 
+// Filter words array
 const filteredWords = words.filter(function (word) {
   return word.length > 6;
 });
@@ -77,36 +78,39 @@ function Greeting(props) {
 }
 
 // Search bar
-const Search = (props) => (
+// Destructure props search, onSearch
+const Search = ({ search, onSearch }) => (
   <div>
     <label htmlFor="search">Search: </label>
     <input
       id="search"
       type="text"
-      value={props.search}
-      onChange={props.onSearch}
+      value={search}
+      onChange={onSearch}
     />
   </div>
 );
 
 // Return new stories array, assign ID
-const List = (props) => (
+// Destructure list
+const List = ({ list }) => (
   <ul>
-    {props.list.map((item) => (
-      <Item key={item.objectID} item={item} />
-    ))}
+    {list.map(({objectID, ...item}) => (
+      <Item key={objectID} {...item} />
+      ))}
   </ul>
 );
 
 // Work with stories array
-const Item = (props) => (
+// Destructure item
+const Item = ({ title, url, author, num_comments, points }) => (
   <li>
     <span>
-      <a href={props.item.url}>{props.item.title}</a>
+      <a href={url}>{title}</a>
     </span>
-    <span> {props.item.author}</span>
-    <span> {props.item.num_comments} comments,</span>
-    <span> {props.item.points} points.</span>
+    <span> {author}</span>
+    <span> {num_comments} comments,</span>
+    <span> {points} points.</span>
   </li>
 );
 
