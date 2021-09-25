@@ -9,6 +9,18 @@ const newNumbers = numbers.map(function (number) {
 });
 console.log(newNumbers);
 
+const useSemiPersistentState = (key, initialState) => {
+  const [value, setValue] = React.useState(
+    localStorage.getItem(key) || initialState
+  );
+
+  React.useEffect(() => {
+    localStorage.setItem(key, value);
+  }, [value, key]);
+
+  return [value, setValue]
+};
+
 // App component
 const App = () => {
   const stories = [
@@ -30,11 +42,16 @@ const App = () => {
     },
   ];
 
-  // Set state on searchTerm, setSearchTerm
-  const [searchTerm, setSearchTerm] = React.useState('');
+  // Set state on searchTerm, setSearchTerm with custom hook
+  const [searchTerm, setSearchTerm] = useSemiPersistentState(
+    'search',
+    'React'
+  );
 
   // Get the value of search input
-  const handleSearch = (event) => setSearchTerm(event.target.value);
+  const handleSearch = (event) => {
+    setSearchTerm(event.target.value);
+  };
 
   // Check if user input matches stories array
   // toLowerCase() both values
@@ -45,7 +62,14 @@ const App = () => {
   return (
     <div className="App">
       <Greeting name="Colin" age="28" occupation="Front-end developer" />
-      <Search search={searchTerm} onSearch={handleSearch} />
+      <InputWithLabel
+        id="search"
+        value={searchTerm}
+        isFocused
+        onInputChange={handleSearch}
+      >
+        <strong>Search:</strong>
+      </InputWithLabel>
       <hr />
       <List list={searchedStories} />
     </div>
@@ -79,17 +103,30 @@ function Greeting(props) {
 
 // Search bar
 // Destructure props search, onSearch
-const Search = ({ search, onSearch }) => (
-  <div>
-    <label htmlFor="search">Search: </label>
-    <input
-      id="search"
-      type="text"
-      value={search}
-      onChange={onSearch}
-    />
-  </div>
-);
+const InputWithLabel = ({ id, value, type = "text", onInputChange, isFocused, children, }) => {
+  const inputRef = React.useRef();
+
+  React.useEffect(() => {
+    if (isFocused && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [isFocused]);
+
+  return (
+    <>
+      <label htmlFor={id}>{children}</label>
+      &nbsp;
+      <input
+        ref={inputRef}
+        id={id}
+        type={type}
+        value={value}
+        autoFocus={isFocused}
+        onChange={onInputChange}
+      />
+    </>
+  )
+}
 
 // Return new stories array, assign ID
 // Destructure list
